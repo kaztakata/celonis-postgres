@@ -1,0 +1,31 @@
+version: '3.8'
+volumes: 
+  postgres_volume:
+services: 
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    volumes:
+      - ./sample.sql:/docker-entrypoint-initdb.d/sample.sql
+      - postgres_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=celonis
+      - POSTGRES_PASSWORD=Celonis123!
+      - POSTGRES_DB=postgres
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@celonis.cloud
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+    ports:
+      - "5050:80"  
+  extractor:
+    container_name: extractor
+    image: connectors/database-uplinked:49326faf857edc939af5971a84810ffc33a4070e # TAG ID 49326faf857edc939af5971a84810ffc33a4070e is as of 2020-11-05
+    restart: always
+    env_file: 
+      - uplink.env
+    environment:
+      - UPLINK_ENABLED=true
